@@ -1,6 +1,6 @@
 #!/bin/sh
 
-
+export EMSCRIPTEN='/usr/local/Cellar/emscripten/1.38.20/libexec'
 # Build the .wasm Module first
 
 # Since we're compiling a side module here, so that we can load it without the
@@ -79,7 +79,7 @@ cat \
 	> jsmpeg.js
 
 # Append the .wasm module to the .js source as base64 string
-echo "JSMpeg.WASM_BINARY_INLINED='$(base64 -w 0 jsmpeg.wasm)';" \
+echo "JSMpeg.WASM_BINARY_INLINED='$(base64 jsmpeg.wasm)';" \
 	>> jsmpeg.js
 
 
