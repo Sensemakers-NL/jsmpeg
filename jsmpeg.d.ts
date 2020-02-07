@@ -58,7 +58,7 @@ declare module "jsmpeg" {
     onEnded?: (player: Player) => void;
     onStalled?: (player: Player) => void;
     onSourceEstablished?: (source: any) => void;
-    onSourceEstablished?: (source: any) => void;
+    onSourceCompleted?: (source: any) => void;
   }
 
   export interface VideoSource {
