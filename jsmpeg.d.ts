@@ -51,14 +51,14 @@ declare module "jsmpeg" {
     maxAudioLag?: number;
     videoBufferSize?: number;
     audioBufferSize?: number;
-    onVideoDecode?: (decoder, time) => void;
-    onAudioDecode?: (decoder, time) => void;
+    onVideoDecode?: (decoder: any, time: number) => void;
+    onAudioDecode?: (decoder: any, time: number) => void;
     onPlay?: (player: Player) =>void;
     onPause?: (player: Player) => void;
     onEnded?: (player: Player) => void;
     onStalled?: (player: Player) => void;
-    onSourceEstablished?: (source) => void;
-    onSourceEstablished?: (source) => void;
+    onSourceEstablished?: (source: any) => void;
+    onSourceEstablished?: (source: any) => void;
   }
 
   export interface VideoSource {
