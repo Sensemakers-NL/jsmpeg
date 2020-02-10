@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export EMSCRIPTEN='/usr/local/Cellar/emscripten/1.38.20/libexec'
+export EMSCRIPTEN='/Users/hotzevisser/Projects/emsdk/upstream/emscripten'
 # Build the .wasm Module first
 
 # Since we're compiling a side module here, so that we can load it without the
