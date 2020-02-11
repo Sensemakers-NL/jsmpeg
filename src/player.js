@@ -78,7 +78,6 @@ var Player = function(url, options) {
 		}
 		else if (JSMpeg.WASM_BINARY_INLINED) {
 			var wasm = JSMpeg.Base64ToArrayBuffer(JSMpeg.WASM_BINARY_INLINED);
-			console.log('start loading', wasm);
 			this.wasmModule.loadFromBuffer(wasm, this.startLoading.bind(this));
 		}
 		else {
