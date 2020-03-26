@@ -6,15 +6,12 @@ var WebGLRenderer = function(options) {
 	this.height = this.canvas.height;
 	this.enabled = true;
 
-	this.hasTextureData = {};
-
 	var contextCreateOptions = {
 		preserveDrawingBuffer: !!options.preserveDrawingBuffer,
 		alpha: false,
 		depth: false,
 		stencil: false,
-		antialias: false,
-		premultipliedAlpha: false
+		antialias: false
 	};
 
 	this.gl = 
@@ -27,8 +24,6 @@ var WebGLRenderer = function(options) {
 
 	var gl = this.gl;
 	var vertexAttr = null;
-
-	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 
 	// Init buffers
 	this.vertexBuffer = gl.createBuffer();
@@ -65,19 +60,14 @@ var WebGLRenderer = function(options) {
 WebGLRenderer.prototype.destroy = function() {
 	var gl = this.gl;
 	
-	this.deleteTexture(gl.TEXTURE0, this.textureY);
-	this.deleteTexture(gl.TEXTURE1, this.textureCb);
-	this.deleteTexture(gl.TEXTURE2, this.textureCr);
+	gl.deleteTexture(this.textureY);
+	gl.deleteTexture(this.textureCb);
+	gl.deleteTexture(this.textureCr);
 
-	gl.useProgram(null);
 	gl.deleteProgram(this.program);
 	gl.deleteProgram(this.loadingProgram);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, null);
 	gl.deleteBuffer(this.vertexBuffer);
-
-	gl.getExtension('WEBGL_lose_context').loseContext();
-	this.canvas.remove();
 };
 
 WebGLRenderer.prototype.resize = function(width, height) {
@@ -88,9 +78,7 @@ WebGLRenderer.prototype.resize = function(width, height) {
 	this.canvas.height = this.height;
 
 	this.gl.useProgram(this.program);
-
-	var codedWidth = ((this.width + 15) >> 4) << 4;
-	this.gl.viewport(0, 0, codedWidth, this.height);
+	this.gl.viewport(0, 0, this.width, this.height);
 };
 
 WebGLRenderer.prototype.createTexture = function(index, name) {
@@ -155,7 +143,7 @@ WebGLRenderer.prototype.renderProgress = function(progress) {
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
 
-WebGLRenderer.prototype.render = function(y, cb, cr, isClampedArray) {
+WebGLRenderer.prototype.render = function(y, cb, cr) {
 	if (!this.enabled) {
 		return;
 	}
@@ -169,7 +157,7 @@ WebGLRenderer.prototype.render = function(y, cb, cr, isClampedArray) {
 	// In some browsers WebGL doesn't like Uint8ClampedArrays (this is a bug
 	// and should be fixed soon-ish), so we have to create a Uint8Array view 
 	// for each plane.
-	if (isClampedArray && this.shouldCreateUnclampedViews) {
+	if (this.shouldCreateUnclampedViews) {
 		y = new Uint8Array(y.buffer),
 		cb = new Uint8Array(cb.buffer),
 		cr = new Uint8Array(cr.buffer);	
@@ -188,25 +176,11 @@ WebGLRenderer.prototype.updateTexture = function(unit, texture, w, h, data) {
 	var gl = this.gl;
 	gl.activeTexture(unit);
 	gl.bindTexture(gl.TEXTURE_2D, texture);
-
-	if (this.hasTextureData[unit]) {
-		gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, w, h, gl.LUMINANCE, gl.UNSIGNED_BYTE, data);
-	}
-	else {
-		this.hasTextureData[unit] = true;
-		gl.texImage2D(
-			gl.TEXTURE_2D, 0, gl.LUMINANCE, w, h, 0, 
-			gl.LUMINANCE, gl.UNSIGNED_BYTE, data
-		);
-	}
-};
-
-WebGLRenderer.prototype.deleteTexture = function(unit, texture) {
-	var gl = this.gl;
-	gl.activeTexture(unit);
-	gl.bindTexture(gl.TEXTURE_2D, null);
-	gl.deleteTexture(texture);
-};
+	gl.texImage2D(
+		gl.TEXTURE_2D, 0, gl.LUMINANCE, w, h, 0, 
+		gl.LUMINANCE, gl.UNSIGNED_BYTE, data
+	);
+}
 
 WebGLRenderer.IsSupported = function() {
 	try {
